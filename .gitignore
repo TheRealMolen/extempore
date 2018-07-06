@@ -10,6 +10,7 @@ extempore.lib
 /cmake-build
 /extras/cmake/aot.cmake
 /extras/cmake/aot_extended.cmake
+/extras/cmake/aot_external.cmake
 
 # AOT-compiled libraries
 /libs/aot-cache
