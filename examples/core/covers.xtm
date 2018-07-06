@@ -326,21 +326,24 @@
 (define whiter-shade
   (lambda (beat dur)
     ;; melody
-    (rmap 32 (lambda (beat p r)
-               (play pad (eval p) 80 r))
-        `(e4 _8 d4 c4 b3 c4 d4 e4 c4
-          a4 _5 b4 c5 (f4 e4) f4 _4 d4 _
-          b4 _5 c5 d5 (g4 f4) g4 _3 f4 e4 f4
-          f4 e4 d4 c4 a3 b3 c4 d4 b3 c4 d4 e4 f4 e4 f4 d4)
-        `(9/2 _8 1/2_7
-          3 _5 1/2 1/2 (1/4 1/4) 2 _4 1 _
-          3 _5 1/2 1/2 (1/4 1/4) 2 _3 1/2_3
-          1/2_16))
+    (rmap 32 0 (lambda (beat dur p r)
+                (play pad p 80 r))
+          `(e4  _ _ _ _ _ _ _ _ d4 c4 b3 c4 d4 e4 c4
+            a4  _ _ _ _ _ b4 c5 (f4 e4) f4 _ _ _ _ d4 _
+            b4  _ _ _ _ _ c5 d5 (g4 f4) g4 _ _ _ f4 e4 f4
+            f4 e4 d4 c4 a3 b3 c4 d4 b3 c4 d4 e4 f4 e4 f4 d4)
+          `(9/2 _ _ _ _ _ _ _ _ .5 .5 .5 .5 .5 .5 .5
+            6/2 _ _ _ _ _ .5 .5 .5     5/2 _ _ _ _ 1 _
+            6/2 _ _ _ _ _ .5 .5 .5     4/2 _ _ _ .5 .5 .5
+            .5 .5 .5 .5 .5 .5 .5 .5 .5 .5 .5 .5 .5 .5 .5 .5))
+
     ;; bassline
-    (rmap 32 (lambda (beat p) (play pad (+ (eval p) -12) 80 2))
+    (rmap 32 0 (lambda (beat dur p) (play pad (+ (eval p) -12) 80 2))
         `(c4 b3 a3 g3 f4 e4 d4 c4 g4 f4 e4 d4 c4 f4 g4 b3))
+
     (callback (*metro* (+ beat (* .5 dur))) 'whiter-shade (+ beat dur) dur)))
- 
+
+
 (whiter-shade (*metro* 'get-beat 4) 1/4)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
