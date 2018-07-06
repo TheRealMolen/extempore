@@ -161,6 +161,8 @@ double AudioDevice::CLOCKOFFSET = 0.0;
 bool first_callback = true;
 uint64_t start_time = 0;
 
+int numSequentialUnderflows = 0;    // used to amortise sequential underflow error messages
+
   //-----------------------------------
   //  PORT AUDIO
   //-----------------------------------
@@ -326,14 +328,24 @@ int audioCallback(const void* InputBuffer, void* OutputBuffer, unsigned long Fra
         return paContinue;
     }
     auto cache_closure(dsp_closure());
+
     if (unlikely(StatusFlags & (paOutputUnderflow | paOutputOverflow))) {
         if (StatusFlags & paOutputUnderflow) {
-            printf("Audio underflow: are you pushing extempore too hard?\n");
+            if (numSequentialUnderflows == 0) {
+                printf("Audio underflow: are you pushing extempore too hard?\n");
+            }
+            numSequentialUnderflows++;
         }
         if (StatusFlags & paOutputOverflow) {
             printf("Audio output overflow\n");
         }
     }
+    if (unlikely(numSequentialUnderflows > 0 &&
+        (!(StatusFlags & paOutputUnderflow)) || (numSequentialUnderflows == 100))) {
+        printf("...audio underflowed another %d times in a row\n", numSequentialUnderflows - 1);
+        numSequentialUnderflows = 0;
+    }
+
     if (likely(AudioDevice::I()->getDSPWrapper() && !AudioDevice::I()->getDSPSUMWrapper())) { // sample by sample
         auto dsp_wrapper(AudioDevice::I()->getDSPWrapper());
         auto cache_wrapper(dsp_wrapper);
