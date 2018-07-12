@@ -7872,7 +7872,7 @@ xtlang's `let' syntax is the same as Scheme"
   (lambda (ast vars kts request?)
     (if (not (assoc-strcmp (cadr ast) vars))
         (impc:compiler:print-compiler-error "no valid local variable found in call to ref" ast))
-    (impc:ir:pointer++ (cadr (assoc-strcmp (cadr ast) vars)))))
+    (list (impc:ir:pointer++ (cadr (assoc-strcmp (cadr ast) vars))))))
 
 (define impc:ti:make-tuple-check
   (lambda (ast vars kts request?)
@@ -11263,7 +11263,8 @@ e.g.
                            `(let ((s:i8* (halloc 2)))
                               ,@expr
                               s)
-                           `(letz ((s:String* (sprintln (begin ,@expr)))
+                           `(letz ((res (begin ,@expr))
+                                   (s:String* (toString res))
                                    (lgth (+ 1 (tref s 0)))
                                    (oldcs (tref s 1))
                                    (newcs:i8* (halloc lgth)))
